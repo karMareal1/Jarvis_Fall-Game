@@ -1,22 +1,53 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let bird = {
-  x: canvas.width / 4,
-  y: canvas.height / 2,
-  width: 30,
-  height: 30,
-  velocity: 0
-};
+let bird, pipes, score, gameOver;
+let bgm = document.getElementById("bgm");
+let volumeSlider = document.getElementById("volumeSlider");
+
+volumeSlider.addEventListener("input", () => {
+  bgm.volume = volumeSlider.value;
+});
+
+// ===== Menu Functions =====
+function startGame() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("settings").style.display = "none";
+  canvas.style.display = "block";
+  initGame();
+  bgm.play();
+}
+
+function openSettings() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("settings").style.display = "block";
+}
+
+function closeSettings() {
+  document.getElementById("settings").style.display = "none";
+  document.getElementById("menu").style.display = "block";
+}
+
+// ===== Game Code =====
+function initGame() {
+  bird = {
+    x: canvas.width / 4,
+    y: canvas.height / 2,
+    width: 30,
+    height: 30,
+    velocity: 0
+  };
+  pipes = [];
+  score = 0;
+  gameOver = false;
+  spawnPipe();
+  gameLoop();
+}
 
 const gravity = 0.5;
 const jump = -10;
-let pipes = [];
-let score = 0;
-let gameOver = false;
 
 function getRandomColor() {
   const colors = ["#4CAF50", "#FF5722", "#03A9F4", "#E91E63", "#FFC107", "#9C27B0"];
@@ -24,10 +55,10 @@ function getRandomColor() {
 }
 
 document.addEventListener("keydown", () => {
-  if (!gameOver) {
+  if (!gameOver && canvas.style.display === "block") {
     bird.velocity = jump;
-  } else {
-    location.reload();
+  } else if (gameOver) {
+    returnToMenu();
   }
 });
 
@@ -76,13 +107,13 @@ function update() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw bird
+  // Bird
   ctx.fillStyle = "black";
   ctx.beginPath();
   ctx.arc(bird.x + bird.width / 2, bird.y + bird.height / 2, bird.width / 2, 0, Math.PI * 2);
   ctx.fill();
 
-  // Draw pipes
+  // Pipes
   pipes.forEach(p => {
     ctx.fillStyle = p.color;
     ctx.fillRect(p.x, 0, p.width, p.top);
@@ -98,7 +129,7 @@ function draw() {
     ctx.font = "40px sans-serif";
     ctx.fillText("GAME OVER", canvas.width / 2 - 120, canvas.height / 2 - 20);
     ctx.font = "24px sans-serif";
-    ctx.fillText("Press any key to restart", canvas.width / 2 - 140, canvas.height / 2 + 20);
+    ctx.fillText("Press any key to return to menu", canvas.width / 2 - 170, canvas.height / 2 + 20);
   }
 }
 
@@ -110,5 +141,9 @@ function gameLoop() {
   }
 }
 
-spawnPipe();
-gameLoop();
+function returnToMenu() {
+  canvas.style.display = "none";
+  document.getElementById("menu").style.display = "block";
+  bgm.pause();
+  bgm.currentTime = 0;
+}

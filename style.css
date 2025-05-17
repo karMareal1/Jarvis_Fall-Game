@@ -12,8 +12,33 @@
     font-family: 'Segoe UI', sans-serif;
   }
   
+  #menu, #settings {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -30%);
+    text-align: center;
+    color: white;
+    z-index: 10;
+  }
+  
+  #menu button, #settings button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 18px;
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  #menu button:hover, #settings button:hover {
+    background: #666;
+  }
+  
   canvas {
-    display: block;
+    display: none;
     width: 100vw;
     height: 100vh;
     background: linear-gradient(#70c5ce, #ffffff);
